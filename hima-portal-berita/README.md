@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portal Berita HIMA Ilmu Hukum
 
-## Getting Started
+Aplikasi web portal berita resmi untuk **Himpunan Mahasiswa Ilmu Hukum (HIMA Ilmu Hukum)** berbasis Next.js App Router, Prisma ORM (PostgreSQL), dan NextAuth v5.
 
-First, run the development server:
+## Fitur Utama
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Halaman Publik
+- **Beranda**: Hero profil, navigasi kategori, daftar berita terbaru, dan berita paling banyak dibaca.
+- **Daftar Berita (`/berita`)**: Pencarian kata kunci, filter kategori, dan pagination.
+- **Detail Berita (`/berita/[slug]`)**: Konten HTML tersanitasi, penghitung views otomatis, metadata SEO dinamis, dan berita terkait.
+- **Kategori (`/kategori/[slug]`)**: Daftar berita berdasarkan kategori.
+- **Galeri (`/galeri`)**: Dokumentasi visual dinamis dari thumbnail berita yang dipublikasikan.
+- **Tentang (`/tentang`)**: Profil, visi & misi, dan struktur bidang kepengurusan HIMA Ilmu Hukum.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Admin Panel (`/admin`)
+- **Autentikasi & RBAC**: Login kredensial (`SUPER_ADMIN`, `EDITOR`, `PENULIS`) dengan proteksi middleware dan validasi sisi server.
+- **Dashboard**: Statistik total berita, published, draft, total views, dan daftar 5 berita terbaru.
+- **Kelola Berita**: Tambah, edit, hapus, filter status, pencarian, upload thumbnail (Cloudinary atau fallback lokal `public/uploads`), toolbar formatting, dan preview konten.
+- **Kelola Kategori**: CRUD kategori (Editor & Super Admin) dengan proteksi hapus bila kategori masih digunakan.
+- **Kelola Pengguna**: CRUD pengguna & manajemen role (Super Admin).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Menjalankan Project
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Salin `.env.example` menjadi `.env` dan isi `DATABASE_URL` serta `NEXTAUTH_SECRET`.
+2. Install dependensi dan generate Prisma Client:
+   ```bash
+   npm install
+   npx prisma generate
+   npx prisma db push
+   npm run seed
+   ```
+3. Jalankan server pengembangan:
+   ```bash
+   npm run dev
+   ```
+4. Akses portal di `http://localhost:3000` dan login admin di `http://localhost:3000/admin/login`.
+   - **Akun default hasil seed**: `admin@hima.com` / `admin123` (segera ubah password setelah login).

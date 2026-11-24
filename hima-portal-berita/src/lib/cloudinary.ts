@@ -38,6 +38,16 @@ export async function uploadImage(file: File): Promise<string> {
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
 
+  const baseName =
+    path
+      .basename(file.name, path.extname(file.name))
+      .toLowerCase()
+      .replace(/[^a-z0-9-_]/g, "-")
+      .replace(/-+/g, "-")
+      .slice(0, 48) || "image";
+  const filename = `${Date.now()}-${baseName}${ext}`;
+
+  // 1. Prioritas: Cloudinary
   const hasCloudinary =
     !!process.env.CLOUDINARY_CLOUD_NAME &&
     !!process.env.CLOUDINARY_API_KEY &&
@@ -46,26 +56,48 @@ export async function uploadImage(file: File): Promise<string> {
   if (hasCloudinary) {
     return new Promise((resolve, reject) => {
       cloudinary.uploader
-        .upload_stream({ folder: "hima-portal", resource_type: "image" }, (err, result) => {
-          if (err || !result) reject(err ?? new Error("Gagal mengunggah gambar ke Cloudinary"));
-          else resolve(result.secure_url);
-        })
+        .upload_stream(
+          { folder: "hima-portal", resource_type: "image" },
+          (err, result) => {
+            if (err || !result)
+              reject(err ?? new Error("Gagal mengunggah gambar ke Cloudinary"));
+            else resolve(result.secure_url);
+          }
+        )
         .end(buffer);
     });
   }
 
-  // Fallback: simpan lokal di /public/uploads dengan nama file tersanitasi
+  // 2. Alternatif cloud: Supabase Storage (jika dikonfigurasi)
+  const supabaseUrl = process.env.SUPABASE_URL?.replace(/\/$/, "");
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseBucket = process.env.SUPABASE_STORAGE_BUCKET || "hima-portal";
+
+  if (supabaseUrl && supabaseKey) {
+    const objectPath = `uploads/${filename}`;
+    const res = await fetch(
+      `${supabaseUrl}/storage/v1/object/${supabaseBucket}/${objectPath}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${supabaseKey}`,
+          apikey: supabaseKey,
+          "Content-Type": file.type,
+          "x-upsert": "true",
+        },
+        body: buffer,
+      }
+    );
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      throw new Error(`Gagal mengunggah ke Supabase Storage: ${text || res.status}`);
+    }
+    return `${supabaseUrl}/storage/v1/object/public/${supabaseBucket}/${objectPath}`;
+  }
+
+  // 3. Fallback lokal (untuk pengembangan di localhost)
   const uploadsDir = path.join(process.cwd(), "public", "uploads");
   if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-
-  const baseName = path
-    .basename(file.name, path.extname(file.name))
-    .toLowerCase()
-    .replace(/[^a-z0-9-_]/g, "-")
-    .replace(/-+/g, "-")
-    .slice(0, 48) || "image";
-
-  const filename = `${Date.now()}-${baseName}${ext}`;
   const filepath = path.join(uploadsDir, filename);
   fs.writeFileSync(filepath, buffer);
   return `/uploads/${filename}`;

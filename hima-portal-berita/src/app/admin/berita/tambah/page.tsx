@@ -1,41 +1,12 @@
-"use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
+import { ArticleForm } from "@/components/admin/ArticleForm";
 
-export default function TambahBeritaPage() {
-  const router = useRouter();
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [categoryId, setCategoryId] = useState("");
-  const [status, setStatus] = useState("DRAFT");
-  const [error, setError] = useState("");
+export const dynamic = "force-dynamic";
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const res = await fetch("/api/articles", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, content, categoryId, status }),
-    });
-    const json = await res.json();
-    if (!json.success) setError(json.error);
-    else router.push("/admin/berita");
-  }
+export default async function TambahBeritaPage() {
+  const session = await auth();
+  if (!session?.user) redirect("/admin/login");
 
-  return (
-    <form onSubmit={handleSubmit} className="max-w-2xl space-y-3">
-      <h1 className="font-serif text-2xl font-bold">Tambah Berita</h1>
-      <Input placeholder="Judul" value={title} onChange={(e) => setTitle(e.target.value)} required />
-      <Input placeholder="Category ID" value={categoryId} onChange={(e) => setCategoryId(e.target.value)} required />
-      <textarea className="w-full rounded border p-2" rows={10} placeholder="Konten" value={content} onChange={(e) => setContent(e.target.value)} required />
-      <select className="rounded border p-2" value={status} onChange={(e) => setStatus(e.target.value)}>
-        <option value="DRAFT">Draft</option>
-        <option value="PUBLISHED">Published</option>
-      </select>
-      {error && <p className="text-red-600">{error}</p>}
-      <Button type="submit">Simpan</Button>
-    </form>
-  );
+  return <ArticleForm mode="create" />;
 }

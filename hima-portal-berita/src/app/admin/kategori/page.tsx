@@ -1,42 +1,15 @@
-"use client";
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
+import { KategoriAdminClient } from "@/components/admin/KategoriAdminClient";
 
-export default function KategoriAdminPage() {
-  const [items, setItems] = useState<any[]>([]);
-  const [name, setName] = useState("");
+export const dynamic = "force-dynamic";
 
-  async function load() {
-    const res = await fetch("/api/categories");
-    const json = await res.json();
-    if (json.success) setItems(json.data);
-  }
-  useEffect(() => { load(); }, []);
-
-  async function handleAdd(e: React.FormEvent) {
-    e.preventDefault();
-    await fetch("/api/categories", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name }),
-    });
-    setName("");
-    load();
+export default async function KategoriAdminPage() {
+  const session = await auth();
+  if (!session?.user) redirect("/admin/login");
+  if (session.user.role !== "SUPER_ADMIN" && session.user.role !== "EDITOR") {
+    redirect("/admin/dashboard");
   }
 
-  return (
-    <div>
-      <h1 className="font-serif text-2xl font-bold">Kelola Kategori</h1>
-      <form onSubmit={handleAdd} className="my-4 flex gap-2">
-        <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nama kategori" required />
-        <Button type="submit">Tambah</Button>
-      </form>
-      <ul className="space-y-2">
-        {items.map((c) => (
-          <li key={c.id} className="rounded border bg-white p-3">{c.name} ({c.slug})</li>
-        ))}
-      </ul>
-    </div>
-  );
+  return <KategoriAdminClient />;
 }
