@@ -34,6 +34,8 @@ export default async function GaleriPage() {
     }),
   ]);
 
+  const seenImageUrls = new Set(galleryItems.map((g) => g.imageUrl));
+
   const photos: PublicPhotoItem[] = [
     ...galleryItems.map((g) => ({
       id: `gal-${g.id}`,
@@ -44,7 +46,7 @@ export default async function GaleriPage() {
       date: g.createdAt.toISOString(),
     })),
     ...articleItems
-      .filter((a) => Boolean(a.thumbnail))
+      .filter((a) => Boolean(a.thumbnail) && !seenImageUrls.has(a.thumbnail!))
       .map((a) => ({
         id: `art-${a.id}`,
         title: a.title,
@@ -57,31 +59,31 @@ export default async function GaleriPage() {
   ];
 
   return (
-    <div className="editorial-rule-top pt-6">
-      <div className="mb-8 border-b border-[#D8D1C3] pb-5">
-        <h1 className="font-serif text-[clamp(1.75rem,3vw,2.5rem)] font-bold text-[#14263D]">
-          Galeri Kegiatan
+    <div className="rounded-md border border-[#DCE2EA] bg-white p-5 md:p-8">
+      <div className="portal-section-heading mb-6">
+        <h1 className="font-serif text-2xl font-bold text-[#111827] md:text-3xl">
+          <span className="text-[#0B4F9C]">Galeri</span> Kegiatan
         </h1>
-        <p className="mt-1 text-sm text-[#475467]">
+        <p className="mt-1 text-sm text-[#475569]">
           Arsip foto seminar, diskusi hukum, dan kegiatan lapangan HIMA Ilmu Hukum
         </p>
       </div>
 
       {photos.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-lg border border-[#D8D1C3] bg-[#FFFDF9] p-12 text-center">
-          <ImageIcon className="h-10 w-10 text-[#8C8272]" aria-hidden="true" />
-          <p className="mt-3 font-serif text-lg font-bold text-[#14263D]">
+        <div className="flex flex-col items-center justify-center rounded border border-[#DCE2EA] bg-[#F4F6F9] p-12 text-center">
+          <ImageIcon className="h-10 w-10 text-[#64748B]" aria-hidden="true" />
+          <p className="mt-3 font-serif text-lg font-bold text-[#111827]">
             Belum ada foto dokumentasi
           </p>
-          <p className="mt-1 max-w-md text-sm text-[#475467]">
+          <p className="mt-1 max-w-md text-sm text-[#475569]">
             Pengurus redaksi dapat mengunggah dokumentasi melalui menu Kelola
             Galeri, atau foto thumbnail berita akan muncul otomatis di halaman ini.
           </p>
           <Link
             href="/berita"
-            className="mt-5 inline-flex min-h-11 items-center rounded-md border border-[#8C8272] bg-[#F7F4EE] px-4 py-2 text-sm font-semibold text-[#14263D] hover:bg-[#EFECE4]"
+            className="mt-5 inline-flex min-h-11 items-center rounded-md bg-[#0B4F9C] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0F213E]"
           >
-            Baca Arsip Berita
+            Buka Indeks Berita
           </Link>
         </div>
       ) : (

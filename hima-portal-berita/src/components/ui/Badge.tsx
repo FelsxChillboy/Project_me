@@ -8,10 +8,10 @@ interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
-  gold: "bg-[#EFE4C0] text-[#5C4507] border border-[#D4BA6A]",
-  navy: "bg-[#1E3A5F] text-white",
+  gold: "bg-[#EAF2FB] text-[#0B4F9C] border border-[#C7DCF6]",
+  navy: "bg-[#0F213E] text-white",
   green: "bg-emerald-50 text-emerald-900 border border-emerald-300",
-  gray: "bg-[#EFECE4] text-[#3B4654] border border-[#D8D1C3]",
+  gray: "bg-[#F4F6F9] text-[#475569] border border-[#DCE2EA]",
   red: "bg-red-50 text-red-900 border border-red-300",
 };
 

@@ -1,43 +1,74 @@
 import Link from "next/link";
+import type { NavCategory } from "./Navbar";
 
-export function Footer() {
+export function Footer({ categories = [] }: { categories?: NavCategory[] }) {
   return (
-    <footer className="mt-auto border-t-2 border-[#C9A227] bg-[#14263D] text-white">
-      <div className="mx-auto flex max-w-6xl flex-col justify-between gap-6 px-4 py-10 md:flex-row md:items-center md:px-6">
-        <div className="max-w-md">
-          <p className="font-serif text-lg font-bold tracking-tight text-white">
+    <footer className="mt-auto border-t-4 border-[#0B4F9C] bg-[#0F213E] text-white">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-4 py-12 md:grid-cols-12 md:px-6">
+        <div className="md:col-span-5">
+          <p className="font-serif text-xl font-bold text-white">
             HIMA Ilmu Hukum
           </p>
-          <p className="mt-1.5 text-sm leading-relaxed text-[#E5DEC9]">
-            Media publikasi berita kegiatan, pengumuman akademik, dan kajian
+          <p className="mt-2.5 max-w-sm text-sm leading-relaxed text-[#CBD5E1]">
+            Portal berita, informasi akademik, dokumentasi kegiatan, dan ruang
             opini hukum Himpunan Mahasiswa Ilmu Hukum.
           </p>
         </div>
 
-        <nav
-          aria-label="Navigasi footer"
-          className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-[#E5DEC9]"
-        >
-          <Link href="/" className="py-1.5 transition-colors hover:text-[#F0D57A]">
-            Beranda
-          </Link>
-          <Link href="/berita" className="py-1.5 transition-colors hover:text-[#F0D57A]">
-            Arsip Berita
-          </Link>
-          <Link href="/galeri" className="py-1.5 transition-colors hover:text-[#F0D57A]">
-            Galeri
-          </Link>
-          <Link href="/tentang" className="py-1.5 transition-colors hover:text-[#F0D57A]">
-            Tentang
-          </Link>
-          <Link href="/admin/login" className="py-1.5 transition-colors hover:text-[#F0D57A]">
-            Redaksi
-          </Link>
-        </nav>
+        <div className="md:col-span-4">
+          <h2 className="border-b border-white/15 pb-2 text-xs font-bold uppercase tracking-wider text-[#F5D061]">
+            Rubrik Hukum
+          </h2>
+          <ul className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-[#CBD5E1]">
+            {categories.map((cat) => (
+              <li key={cat.id}>
+                <Link
+                  href={`/kategori/${cat.slug}`}
+                  className="inline-block py-0.5 transition-colors hover:text-white hover:underline"
+                >
+                  {cat.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="md:col-span-3">
+          <h2 className="border-b border-white/15 pb-2 text-xs font-bold uppercase tracking-wider text-[#F5D061]">
+            Redaksi dan Kanal
+          </h2>
+          <ul className="mt-3 space-y-2 text-sm text-[#CBD5E1]">
+            <li>
+              <Link href="/" className="inline-block py-0.5 hover:text-white hover:underline">
+                Beranda
+              </Link>
+            </li>
+            <li>
+              <Link href="/berita" className="inline-block py-0.5 hover:text-white hover:underline">
+                Indeks Berita
+              </Link>
+            </li>
+            <li>
+              <Link href="/galeri" className="inline-block py-0.5 hover:text-white hover:underline">
+                Galeri Kegiatan
+              </Link>
+            </li>
+            <li>
+              <Link href="/tentang" className="inline-block py-0.5 hover:text-white hover:underline">
+                Tentang HIMA
+              </Link>
+            </li>
+            <li>
+              <Link href="/admin/login" className="inline-block py-0.5 text-[#F5D061] hover:underline">
+                Masuk Panel Redaksi
+              </Link>
+            </li>
+          </ul>
+        </div>
       </div>
 
-      <div className="border-t border-white/15 py-4 text-center text-xs text-[#E5DEC9]">
-        © {new Date().getFullYear()} HIMA Ilmu Hukum. Seluruh hak cipta dilindungi.
+      <div className="bg-[#0B4F9C] py-3.5 text-center text-xs font-medium text-white">
+        © {new Date().getFullYear()} Portal Berita HIMA Ilmu Hukum. Seluruh hak cipta dilindungi.
       </div>
     </footer>
   );

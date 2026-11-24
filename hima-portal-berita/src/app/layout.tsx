@@ -44,7 +44,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id" className={`${newsreader.variable} ${plusJakarta.variable}`}>
-      <body className="bg-[#F7F4EE] font-sans text-[#14263D] antialiased">
+      <body className="bg-[#F4F6F9] font-sans text-[#111827] antialiased">
         {children}
       </body>
     </html>

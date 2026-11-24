@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Calendar, Clock, Eye, User } from "lucide-react";
+import { Calendar, Clock, Eye, User, ChevronRight } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatDate } from "@/lib/utils";
 import { sanitizeArticleHtml } from "@/lib/sanitize";
 import { ArticleCard } from "@/components/articles/ArticleCard";
 import { ShareButtons } from "@/components/articles/ShareButtons";
+import { PortalSidebar } from "@/components/articles/PortalSidebar";
 
 export const dynamic = "force-dynamic";
 
@@ -78,98 +79,141 @@ export default async function DetailBerita({
     data: { views: { increment: 1 } },
   });
 
-  const related = await prisma.article.findMany({
-    where: {
-      status: "PUBLISHED",
-      categoryId: article.categoryId,
-      id: { not: article.id },
-    },
-    include: {
-      author: { select: { id: true, name: true } },
-      category: { select: { id: true, name: true, slug: true } },
-    },
-    orderBy: { createdAt: "desc" },
-    take: 3,
-  });
+  const [related, popular, categories] = await Promise.all([
+    prisma.article.findMany({
+      where: {
+        status: "PUBLISHED",
+        categoryId: article.categoryId,
+        id: { not: article.id },
+      },
+      include: {
+        author: { select: { id: true, name: true } },
+        category: { select: { id: true, name: true, slug: true } },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 4,
+    }),
+    prisma.article.findMany({
+      where: { status: "PUBLISHED" },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        views: true,
+        publishedAt: true,
+        createdAt: true,
+        category: { select: { name: true, slug: true } },
+      },
+      orderBy: { views: "desc" },
+      take: 5,
+    }),
+    prisma.category.findMany({
+      include: {
+        _count: {
+          select: { articles: { where: { status: "PUBLISHED" } } },
+        },
+      },
+      orderBy: { name: "asc" },
+    }),
+  ]);
 
   const safeContent = sanitizeArticleHtml(article.content);
   const readingMinutes = estimateReadingMinutes(safeContent);
 
   return (
-    <div className="mx-auto max-w-4xl">
-      <Link
-        href="/berita"
-        className="mb-4 inline-flex min-h-11 items-center gap-1.5 text-sm font-medium text-[#475467] hover:text-[#14263D]"
-      >
-        <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-        Kembali ke Arsip Berita
-      </Link>
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+      {/* Main Legal Reading Column (~67%) */}
+      <div className="space-y-8 lg:col-span-8">
+        <article className="rounded-md border border-[#DCE2EA] bg-white p-5 md:p-9">
+          {/* Breadcrumb */}
+          <nav
+            aria-label="Breadcrumb"
+            className="mb-4 flex flex-wrap items-center gap-1.5 text-xs text-[#475569]"
+          >
+            <Link href="/" className="hover:text-[#0B4F9C] hover:underline">
+              Beranda
+            </Link>
+            <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
+            <Link
+              href={`/kategori/${article.category.slug}`}
+              className="font-semibold text-[#0B4F9C] hover:underline"
+            >
+              {article.category.name}
+            </Link>
+          </nav>
 
-      <article className="editorial-rule-top rounded-b-lg border border-t-0 border-[#D8D1C3] bg-[#FFFDF9] p-6 md:p-12">
-        <Link
-          href={`/kategori/${article.category.slug}`}
-          className="text-xs font-semibold text-[#785B0A] hover:underline"
-        >
-          {article.category.name}
-        </Link>
+          <h1 className="font-serif text-[clamp(1.65rem,3.2vw,2.5rem)] font-bold leading-[1.18] tracking-[-0.015em] text-[#111827]">
+            {article.title}
+          </h1>
 
-        <h1 className="mt-2 font-serif text-[clamp(1.75rem,3.4vw,2.75rem)] font-bold leading-[1.18] tracking-[-0.02em] text-[#14263D]">
-          {article.title}
-        </h1>
-
-        <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 border-y border-[#D8D1C3] py-3.5 text-sm text-[#475467] tabular-nums">
-          <span className="inline-flex items-center gap-1.5">
-            <User className="h-4 w-4 text-[#1E3A5F]" aria-hidden="true" />
-            {article.author.name}
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <Calendar className="h-4 w-4 text-[#1E3A5F]" aria-hidden="true" />
-            {formatDate(article.publishedAt || article.createdAt)}
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <Clock className="h-4 w-4 text-[#1E3A5F]" aria-hidden="true" />
-            {readingMinutes} menit baca
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <Eye className="h-4 w-4 text-[#1E3A5F]" aria-hidden="true" />
-            {article.views + 1} kali dibaca
-          </span>
-        </div>
-
-        {article.thumbnail && (
-          <div className="my-7 aspect-[16/10] w-full overflow-hidden rounded-md border border-[#D8D1C3] bg-[#EFECE4]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={article.thumbnail}
-              alt={article.title}
-              width={960}
-              height={600}
-              fetchPriority="high"
-              className="h-full w-full object-cover"
-            />
+          <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 border-y border-[#E2E8F0] py-3 text-xs text-[#475569] tabular-nums">
+            <span className="inline-flex items-center gap-1.5 font-medium text-[#111827]">
+              <User className="h-3.5 w-3.5 text-[#0B4F9C]" aria-hidden="true" />
+              {article.author.name}
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Calendar className="h-3.5 w-3.5 text-[#0B4F9C]" aria-hidden="true" />
+              {formatDate(article.publishedAt || article.createdAt)}
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Clock className="h-3.5 w-3.5 text-[#0B4F9C]" aria-hidden="true" />
+              {readingMinutes} menit baca
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Eye className="h-3.5 w-3.5 text-[#0B4F9C]" aria-hidden="true" />
+              {article.views + 1} kali dibaca
+            </span>
           </div>
+
+          {article.thumbnail && (
+            <div className="my-6 aspect-[16/9] w-full overflow-hidden rounded border border-[#DCE2EA] bg-[#F4F6F9]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={article.thumbnail}
+                alt={article.title}
+                width={960}
+                height={540}
+                fetchPriority="high"
+                className="h-full w-full object-cover"
+              />
+            </div>
+          )}
+
+          <div
+            className="article-content mt-6"
+            dangerouslySetInnerHTML={{ __html: safeContent }}
+          />
+
+          <ShareButtons title={article.title} slug={article.slug} />
+
+          <div className="mt-6 border-t border-[#E2E8F0] pt-4">
+            <Link
+              href="/berita"
+              className="inline-flex min-h-10 items-center text-sm font-semibold text-[#0B4F9C] hover:underline"
+            >
+              Kembali ke Indeks Berita
+            </Link>
+          </div>
+        </article>
+
+        {related.length > 0 && (
+          <section className="rounded-md border border-[#DCE2EA] bg-white p-5 md:p-6">
+            <h2 className="portal-section-heading font-serif text-xl font-bold text-[#111827]">
+              <span className="text-[#0B4F9C]">Berita</span> Terkait
+            </h2>
+            <div className="mt-2 divide-y divide-[#E2E8F0]">
+              {related.map((r) => (
+                <ArticleCard key={r.id} article={r} variant="horizontal" />
+              ))}
+            </div>
+          </section>
         )}
+      </div>
 
-        <div
-          className="article-content mx-auto mt-7"
-          dangerouslySetInnerHTML={{ __html: safeContent }}
-        />
-
-        <ShareButtons title={article.title} slug={article.slug} />
-      </article>
-
-      {related.length > 0 && (
-        <section className="mt-12 border-t border-[#D8D1C3] pt-8">
-          <h2 className="mb-5 font-serif text-2xl font-bold text-[#14263D]">
-            Berita Terkait
-          </h2>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {related.map((r) => (
-              <ArticleCard key={r.id} article={r} />
-            ))}
-          </div>
-        </section>
-      )}
+      {/* Sticky Legal Portal Sidebar (~33%) */}
+      <div className="lg:col-span-4">
+        <PortalSidebar popular={popular} categories={categories} />
+      </div>
     </div>
   );
 }

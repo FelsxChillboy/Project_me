@@ -1,30 +1,29 @@
 # Design Direction: Portal Berita HIMA Ilmu Hukum
 
-## Identity & Aesthetic
-- **Visual Language**: Editorial Hukum Klasik (modern legal journal & broadsheet publication).
-- **Audience**: Mahasiswa Ilmu Hukum, dosen, civitas akademika, dan masyarakat pembaca opini hukum.
-- **Dial**: `ENERGY 2 / RHYTHM 2 / MOTION 1`
-- **Identity Motif**: Double hairline archival rules (`border-t-2 border-[#14263D]` paired with warm `#D8D1C3` dividers) and broadsheet editorial typography hierarchy.
+- **Visual Language**: Portal Berita Hukum Indonesia (terinspirasi struktur redaksi media hukum seperti PortalHukum dan Hukumonline, dipadukan ketajaman jurnal hukum).
+- **Dial**: ENERGY 2 / RHYTHM 2 / MOTION 1
+- **Motif**: Header berita 3-lapis (utility bar, masthead + pencarian, bilah rubrik navy) dan judul seksi dua warna (`#0B4F9C` + `#111827`) bergaris bawah tegas.
 
-## Palette (WCAG AA Verified via contrast-check.py)
-- **Ground (Archival Paper)**: `#F7F4EE`
-- **Elevated Sheet**: `#FFFDF9`
-- **Primary Ink (Headings & Body)**: `#14263D` (13.92:1 on `#F7F4EE`)
-- **Brand Navy (Primary Interactive)**: `#1E3A5F` (10.48:1 on `#F7F4EE`; `#FFFFFF` on `#1E3A5F` = 11.50:1)
-- **Secondary Ink (Metadata & Captions)**: `#475467` (7.00:1 on `#F7F4EE`, 7.57:1 on `#FFFDF9`)
-- **Accent Brass (Rules & Primary Gold CTA)**: `#C9A227` (`#14263D` ink on `#C9A227` = 6.32:1)
-- **Accent Gold Ink (Light Surfaces)**: `#785B0A` (5.80:1 on `#F7F4EE`, 6.26:1 on `#FFFDF9`)
-- **Accent Gold Ink (Dark Surfaces)**: `#F0D57A` (10.55:1 on `#14263D`)
-- **Hairline Divider**: `#D8D1C3`
-- **Input Border (WCAG 1.4.11 >= 3:1)**: `#8C8272` (3.72:1 on `#FFFDF9`)
+## Colors
+
+Tokens live in `src/app/globals.css` (semua lulus WCAG AA via `contrast-check.py`):
+
+- Canvas: `#F4F6F9`, Sheet: `#FFFFFF`, Tinted Tag: `#EAF2FB`
+- Deep Institutional Navy: `#0F213E` (header bar & footer), Primary Navy: `#142D55`
+- Legal Editorial Blue: `#0B4F9C` (8.04:1 on `#FFFFFF`, 7.12:1 on `#EAF2FB`)
+- Ink: `#111827` (17.74:1), Secondary Slate: `#475569` (7.58:1)
+- Gold Accent: `#D4A72C` (`#0F213E` text = 7.16:1), Gold on Dark: `#F5D061` (10.77:1)
+- Borders: `#DCE2EA` (structural hairline), `#64748B` (input border, 4.76:1)
 
 ## Typography
-- **Display & Editorial Serif**: `Newsreader` (Google Fonts via `next/font/google`) for headlines, masthead, article titles, and editorial pull quotes.
-- **Body & Interface Sans**: `Plus Jakarta Sans` (Google Fonts via `next/font/google`) for body paragraphs, navigation, forms, and tabular metadata.
-- **Body Measure**: `65ch-70ch` on long-form article views; `tabular-nums` for dates, counters, and statistics.
 
-## Surface & Interaction Rules
-- **Theme**: Fixed warm light archival paper (editorial reading clarity for legal prose).
-- **Elevation**: Hairline borders (`1px solid #D8D1C3`) as primary containment; subtle shadow reserved for modals and elevated hover lifts only.
-- **Motion**: Quiet hover & press transitions only (`MOTION 1`); all non-essential transitions disabled under `prefers-reduced-motion: reduce`.
-- **Accessibility**: Visible `:focus-visible` rings, Escape-closable dialogs, skip-to-content link, `>= 44px` tap targets on mobile, zero em dashes in agent copy.
+Loaded in `src/app/layout.tsx` via Google Fonts:
+
+- Headlines & Article Titles: Newsreader
+- UI, Lists & Body Copy: Plus Jakarta Sans (`tabular-nums` for dates/views, `68ch` reading measure)
+
+## Components
+
+- Navigation: `src/components/layout/Navbar.tsx` (3-tier newsroom header + search + live categories), `src/components/layout/Footer.tsx`, `src/components/layout/AdminSidebar.tsx`.
+- Primitives: `src/components/ui/Button.tsx`, `Badge.tsx`, `Card.tsx`, `Input.tsx`, `Modal.tsx`.
+- Newsroom: `src/components/articles/ArticleCard.tsx`, `PortalSidebar.tsx`, `GalleryGrid.tsx`, `ShareButtons.tsx`.

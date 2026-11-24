@@ -35,9 +35,9 @@ export function GalleryGrid({ photos }: { photos: PublicPhotoItem[] }) {
             key={item.id}
             type="button"
             onClick={() => setSelected(item)}
-            className="group overflow-hidden rounded-lg border border-[#D8D1C3] bg-[#FFFDF9] text-left transition hover:-translate-y-0.5 hover:border-[#8C8272]"
+            className="group overflow-hidden rounded-md border border-[#DCE2EA] bg-white text-left transition-colors hover:border-[#0B4F9C]"
           >
-            <div className="aspect-[4/3] w-full overflow-hidden bg-[#EFECE4]">
+            <div className="aspect-[4/3] w-full overflow-hidden bg-[#EAF2FB]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={item.imageUrl}
@@ -49,13 +49,13 @@ export function GalleryGrid({ photos }: { photos: PublicPhotoItem[] }) {
               />
             </div>
             <div className="p-4">
-              <p className="text-xs font-semibold text-[#785B0A]">
+              <span className="inline-block rounded bg-[#EAF2FB] px-2 py-0.5 text-xs font-semibold text-[#0B4F9C]">
                 {item.label}
-              </p>
-              <p className="mt-1 line-clamp-2 font-serif text-base font-bold text-[#14263D] group-hover:text-[#1E3A5F]">
+              </span>
+              <p className="mt-2 line-clamp-2 font-serif text-base font-bold text-[#111827] group-hover:text-[#0B4F9C]">
                 {item.title}
               </p>
-              <p className="mt-1.5 text-xs text-[#475467] tabular-nums">
+              <p className="mt-1.5 text-xs text-[#475569] tabular-nums">
                 {formatDate(item.date)}
               </p>
             </div>
@@ -68,22 +68,22 @@ export function GalleryGrid({ photos }: { photos: PublicPhotoItem[] }) {
           role="dialog"
           aria-modal="true"
           aria-label={selected.title}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[#14263D]/80 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#0F213E]/80 p-4"
           onClick={() => setSelected(null)}
         >
           <div
-            className="relative max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg border border-[#D8D1C3] bg-[#FFFDF9] shadow-2xl"
+            className="relative max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-md border border-[#DCE2EA] bg-white shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               type="button"
               onClick={() => setSelected(null)}
               aria-label="Tutup tampilan foto"
-              className="absolute top-3 right-3 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-[#14263D]/85 text-white hover:bg-[#14263D]"
+              className="absolute top-3 right-3 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-[#0F213E]/85 text-white hover:bg-[#0F213E]"
             >
               <X className="h-5 w-5" aria-hidden="true" />
             </button>
-            <div className="bg-[#14263D]">
+            <div className="bg-[#0F213E]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={selected.imageUrl}
@@ -92,21 +92,21 @@ export function GalleryGrid({ photos }: { photos: PublicPhotoItem[] }) {
               />
             </div>
             <div className="p-6">
-              <p className="text-xs font-semibold text-[#785B0A] tabular-nums">
+              <p className="text-xs font-semibold text-[#0B4F9C] tabular-nums">
                 {selected.label}, {formatDate(selected.date)}
               </p>
-              <h3 className="mt-1 font-serif text-2xl font-bold text-[#14263D]">
+              <h3 className="mt-1 font-serif text-2xl font-bold text-[#111827]">
                 {selected.title}
               </h3>
               {selected.caption && (
-                <p className="mt-2 text-sm leading-relaxed text-[#475467]">
+                <p className="mt-2 text-sm leading-relaxed text-[#475569]">
                   {selected.caption}
                 </p>
               )}
               {selected.articleSlug && (
                 <Link
                   href={`/berita/${selected.articleSlug}`}
-                  className="mt-4 inline-flex min-h-11 items-center gap-1.5 rounded-md bg-[#1E3A5F] px-4 py-2 text-xs font-semibold text-white hover:bg-[#14263D]"
+                  className="mt-4 inline-flex min-h-11 items-center gap-1.5 rounded-md bg-[#0B4F9C] px-4 py-2 text-xs font-semibold text-white hover:bg-[#0F213E]"
                 >
                   Baca Berita Terkait
                   <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />

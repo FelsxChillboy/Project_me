@@ -39,10 +39,10 @@ export function ShareButtons({ title, slug }: ShareButtonsProps) {
   }
 
   return (
-    <div className="mt-8 flex flex-wrap items-center gap-2.5 border-t border-[#D8D1C3] pt-6 text-sm">
-      <span className="inline-flex items-center gap-1.5 font-medium text-[#475467]">
-        <Share2 className="h-4 w-4 text-[#1E3A5F]" aria-hidden="true" />
-        Bagikan tulisan:
+    <div className="mt-8 flex flex-wrap items-center gap-2.5 border-t border-[#DCE2EA] pt-6 text-sm">
+      <span className="inline-flex items-center gap-1.5 font-semibold text-[#475569]">
+        <Share2 className="h-4 w-4 text-[#0B4F9C]" aria-hidden="true" />
+        Bagikan berita:
       </span>
       <button
         type="button"
@@ -54,14 +54,14 @@ export function ShareButtons({ title, slug }: ShareButtonsProps) {
       <button
         type="button"
         onClick={() => openShare("x")}
-        className="min-h-11 rounded-md bg-[#14263D] px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#1E3A5F]"
+        className="min-h-11 rounded-md bg-[#0F213E] px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#142D55]"
       >
         X / Twitter
       </button>
       <button
         type="button"
         onClick={handleCopy}
-        className="inline-flex min-h-11 items-center gap-1.5 rounded-md border border-[#8C8272] bg-[#FFFDF9] px-3.5 py-2 text-xs font-semibold text-[#14263D] transition-colors hover:bg-[#EFECE4]"
+        className="inline-flex min-h-11 items-center gap-1.5 rounded-md border border-[#64748B] bg-white px-3.5 py-2 text-xs font-semibold text-[#111827] transition-colors hover:bg-[#F4F6F9]"
       >
         {copied ? (
           <>
